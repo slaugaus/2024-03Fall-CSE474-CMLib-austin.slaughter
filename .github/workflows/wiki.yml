@@ -24,9 +24,10 @@ jobs:
           mkdir -p "./wiki"
           find . -type f -name "*.docx" | while read -r file; do
             rel_path="${file#./}"
-            output_dir="./wiki/$(dirname "$rel_path")"
+            sanitized_rel_path=$(echo "$rel_path" | sed 's/ /-/g')
+            output_dir="./wiki/$(dirname "$sanitized_rel_path")"
             mkdir -p "$output_dir"
-            output_file="$output_dir/$(basename "${rel_path%.docx}.md")"
+            output_file="$output_dir/$(basename "${sanitized_rel_path%.docx}.md")"
             pandoc --from docx --to gfm "$file" -o "$output_file"
             echo "Converted: $file -> $output_file"
           done
