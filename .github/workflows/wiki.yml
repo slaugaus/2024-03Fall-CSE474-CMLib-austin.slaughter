@@ -1,0 +1,39 @@
+name: Create Wiki from Word Docs
+on: [push]
+concurrency:
+  group: wiki
+  cancel-in-progress: true
+permissions:
+  contents: write
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Cache APT Packages
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: pandoc
+          version: 1.0
+          execute_install_scripts: true
+
+      - name: Convert all Word docs to GitHub Markdown
+        run: |
+          mkdir -p "./wiki"
+          find . -type f -name "*.docx" | while read -r file; do
+            rel_path="${file#./}"
+            output_dir="$OUTPUT_DIR/$(dirname "$rel_path")"
+            mkdir -p "$output_dir"
+            output_file="$output_dir/$(basename "${rel_path%.docx}.md")"
+            pandoc --from docx --to gfm "$file" -o "$output_file"
+            echo "Converted: $file -> $output_file"
+          done
+
+      - name: Publish wiki
+        uses: ineshbose/wiki-action@v1
+        with:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WIKI_DIR: 'wiki'
+          AUTO_SIDEBAR: true
