@@ -24,7 +24,7 @@ jobs:
           mkdir -p "./wiki"
           find . -type f -name "*.docx" | while read -r file; do
             rel_path="${file#./}"
-            output_dir="$OUTPUT_DIR/$(dirname "$rel_path")"
+            output_dir="./wiki/$(dirname "$rel_path")"
             mkdir -p "$output_dir"
             output_file="$output_dir/$(basename "${rel_path%.docx}.md")"
             pandoc --from docx --to gfm "$file" -o "$output_file"
