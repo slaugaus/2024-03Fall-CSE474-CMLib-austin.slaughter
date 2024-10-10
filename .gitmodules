@@ -1,0 +1,3 @@
+[submodule "Product Library/Source Code/visual-json-editor-vscode"]
+	path = Product Library/Source Code/visual-json-editor-vscode
+	url = https://github.com/slaugaus/visual-json-editor-vscode.git
