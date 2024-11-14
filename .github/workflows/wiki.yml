@@ -23,7 +23,7 @@ jobs:
         run: |
           mkdir -p "./wiki"
           cd ./wiki
-          find . -type f -name "*.docx" | while read -r file; do
+          find .. -type f -name "*.docx" | while read -r file; do
             # Get relative path, sanitize it for folder names, and set up output directories
             rel_path="${file#./}"
             sanitized_rel_path=$(echo "$rel_path" | sed 's/ /-/g')
