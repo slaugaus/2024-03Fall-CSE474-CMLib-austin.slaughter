@@ -28,7 +28,8 @@ jobs:
             output_dir="./wiki/$(dirname "$sanitized_rel_path")"
             mkdir -p "$output_dir"
             output_file="$output_dir/$(basename "${sanitized_rel_path%.docx}.md")"
-            pandoc --from docx --to gfm "$file" -o "$output_file"
+            pandoc --from docx --to html --embed-resources "$file" -o "temp.html"
+            pandoc --from html --to gfm "temp.html" -o "$output_file"
             echo "Converted: $file -> $output_file"
           done
 
