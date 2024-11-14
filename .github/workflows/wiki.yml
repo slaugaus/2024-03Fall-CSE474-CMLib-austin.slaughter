@@ -7,7 +7,7 @@ permissions:
   contents: write
 jobs:
   convert:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,24 +22,15 @@ jobs:
       - name: Convert all Word docs to GitHub Markdown
         run: |
           mkdir -p "./wiki"
-          cd ./wiki
-          find .. -type f -name "*.docx" | while read -r file; do
-            # Get relative path, sanitize it for folder names, and set up output directories
+          find . -type f -name "*.docx" | while read -r file; do
             rel_path="${file#./}"
             sanitized_rel_path=$(echo "$rel_path" | sed 's/ /-/g')
-            doc_name=$(basename "${sanitized_rel_path%.docx}")
-            output_dir="./$(dirname "$sanitized_rel_path")"
-            image_dir="/images/$doc_name"
+            output_dir="./wiki/$(dirname "$sanitized_rel_path")"
             mkdir -p "$output_dir"
-            mkdir -p "$image_dir"
-            
-            # Set up markdown output file path and convert with images in document-specific folder
-            output_file="$output_dir/$doc_name.md"
-            pandoc --from docx --to gfm --extract-media="$image_dir" "$file" -o "$output_file"
-            
-            echo "Converted: $file -> $output_file with images in $image_dir"
+            output_file="$output_dir/$(basename "${sanitized_rel_path%.docx}.md")"
+            pandoc --from docx --to gfm "$file" -o "$output_file"
+            echo "Converted: $file -> $output_file"
           done
-          cd ..
 
       - name: Publish wiki
         uses: ineshbose/wiki-action@v1
